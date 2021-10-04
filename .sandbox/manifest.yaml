@@ -2,8 +2,6 @@ hooks:
   build:
     cmd: |
       sudo apt-get install -y libgmp3-dev
-      gem install rails
-      sudo apt-get update
       sudo apt-get install -y mysql-client libmysqlclient-dev
-      echo "export MYSQL_DB=\"mysql\"" >> ~/.bashrc
-      echo "export MYSQL_PASS=\"batman\"" >> ~/.bashrc
+      sudo apt-get update
+      gem install rails
