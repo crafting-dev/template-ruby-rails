@@ -1,6 +1,6 @@
 # A Rails with MySQL template for Cloud Sandbox
 
-This is a skeleton [ruby on rails](https://rubyonrails.org/) application template created on a basic [App](https://crafting.readme.io/docs/app-spec) configuration in [Cloud Sandbox](https://crafting.readme.io/docs/introduction). 
+This is a template [Ruby on Rails](https://rubyonrails.org/) skeleton application created on a basic [App](https://crafting.readme.io/docs/app-spec) configuration in [Cloud Sandbox](https://crafting.readme.io/docs/introduction). 
 
 ## Getting Started
 
@@ -16,7 +16,7 @@ The general workflow when developing in Cloud Sandbox involves:
 
 ### 2. Creating Sandbox
 
-Once App has been configured, you can create a sandbox using either the Web UI, or using the command line tool:
+Once App has been configured, you can create a sandbox using either the Web UI, or through the command line tool:
 
 ```
 cs sandbox create
@@ -24,7 +24,9 @@ cs sandbox create
 
 ### 3. Developing with Sandbox
 
-After creating a sandbox, you can start developing in the workspace using any of the Web UI or command line tools. The [docs](https://crafting.readme.io/docs/development-in-sandbox) contain more information for working with a sandbox. This template was generated following the steps [below](https://github.com/crafting-dev/template-ruby-rails#steps-to-recreate-template).
+After creating a sandbox, you can start developing in the workspace using any of the Web UI or command line tools. The [docs](https://crafting.readme.io/docs/development-in-sandbox) contain more information for working with a sandbox. 
+
+This template was generated following the steps [below](https://github.com/crafting-dev/template-ruby-rails#steps-to-recreate-template).
 
 ## Caveat
 
@@ -48,12 +50,12 @@ spec:
   - http:
       routes:
       - backend:
-          port: localhost
+          port: http
           target: ruby-rails
         path_prefix: /
-    name: base
+    name: app
   services:
-  - description: Ruby/Rails template
+  - description: Ruby on Rails with MySQL template
     name: ruby-rails
     workspace:
       checkouts:
@@ -65,16 +67,11 @@ spec:
           git: git@github.com:crafting-dev/template-ruby-rails.git
       packages:
       - name: ruby
-        version: 2.7.2
+        version: ~2.7
       - name: nodejs
-        version: 16.9.1
-      port_forward_rules:
-      - local: "3306"
-        remote:
-          port: mysql
-          target: mysql
+        version: ~16
       ports:
-      - name: localhost
+      - name: http
         port: 3000
         protocol: HTTP/TCP
   - managed_service:
@@ -99,15 +96,10 @@ cs sandbox create
 
 Install necessary packages and gems before creating a new rails app in the workspace.
 
-1. `sudo apt-get install libgmp3-dev`
-2. `gem install rails`
+1. `sudo apt-get install -y libgmp3-dev`
+2. `sudo apt-get install -y mysql-client libmysqlclient-dev`
 3. `sudo apt-get update`
-4. `sudo apt-get install mysql-client libmysqlclient-dev`
-
-Make mysql credentials set in App configurations available as environment variables:
-
-1. `echo "export MYSQL_DB=\"mysql\"" >> ~/.bashrc`
-2. `echo "export MYSQL_PASS=\"batman\"" >> ~/.bashrc`
+4. `gem install rails`
 
 Create new rails app:
 
@@ -115,7 +107,7 @@ Create new rails app:
 rails new . -d mysql
 ```
 
-Update `config/database.yml` to use the already set mysql credentials:
+Update `config/database.yml`:
 
 ```yaml
 default: &default
@@ -123,17 +115,22 @@ default: &default
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: root
-  password: <%= ENV['MYSQL_PASS'] %>
-  host: <%= ENV['MYSQL_DB'] %>
+  password: batman # Use an environment variable in a real app setting
+  host: <%= ENV['MYSQL_SERVICE_HOST'] %>
 
 development:
   <<: *default
-  database: <%= ENV['MYSQL_DB'] %>
+  database: mysql
   
 production:
   <<: *default
   url: <%= ENV['MY_APP_DATABASE_URL'] %>
 ```
+
+*NOTE 1*: Sandbox supports standard service injection, where the environment variables `MYSQL_SERVICE_HOST` and `MYSQL_SERVICE_PORT` are already populated. See [environment variables](https://crafting.readme.io/docs/environment-variables) for more details.
+
+*NOTE 2*: For `production.url`, you can specify the connection url environment variable explicitly. Read [Configuring a database](https://guides.rubyonrails.org/configuring.html#configuring-a-database) for a full overview on how database connection configuration can be specified.
+
 
 Then start a new rails server:
 
