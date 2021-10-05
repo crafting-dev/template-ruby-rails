@@ -64,7 +64,7 @@ spec:
           - content: ""
         path: src/template-ruby-rails
         repo:
-          git: git@github.com:crafting-dev/template-ruby-rails.git
+          git: https://github.com/crafting-dev/template-ruby-rails.git
       packages:
       - name: ruby
         version: ~2.7
