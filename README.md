@@ -45,41 +45,40 @@ See our [FAQ](https://crafting.readme.io/docs/frequently-asked-questions) for mo
 The following App configuration was used to create this template (`cs app show -o yaml`):
 
 ```yaml
-spec:
-  endpoints:
-  - http:
-      routes:
-      - backend:
-          port: http
-          target: ruby-rails
-        path_prefix: /
-    name: app
-  services:
-  - description: Ruby on Rails with MySQL template
-    name: ruby-rails
-    workspace:
-      checkouts:
-      - manifest:
-          overlays:
-          - content: ""
-        path: src/template-ruby-rails
-        repo:
-          git: https://github.com/crafting-dev/template-ruby-rails.git
-      packages:
-      - name: ruby
-        version: ~2.7
-      - name: nodejs
-        version: ~16
-      ports:
-      - name: http
-        port: 3000
-        protocol: HTTP/TCP
-  - managed_service:
-      properties:
-        root-password: batman
-      service_type: mysql
-      version: "8"
-    name: mysql
+endpoints:
+- http:
+    routes:
+    - backend:
+        port: http
+        target: ruby-rails
+      path_prefix: /
+  name: app
+services:
+- description: Ruby on Rails with MySQL template
+  name: ruby-rails
+  workspace:
+    checkouts:
+    - manifest:
+        overlays:
+        - content: ""
+      path: src/template-ruby-rails
+      repo:
+        git: https://github.com/crafting-dev/template-ruby-rails.git
+    packages:
+    - name: ruby
+      version: ~2.7
+    - name: nodejs
+      version: ~16
+    ports:
+    - name: http
+      port: 3000
+      protocol: HTTP/TCP
+- managed_service:
+    properties:
+      root-password: batman
+    service_type: mysql
+    version: "8"
+  name: mysql
 ```
 
 The git repo under checkouts can be any empty remote git repository. 
