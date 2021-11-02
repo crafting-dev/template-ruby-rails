@@ -1,48 +1,62 @@
-# A Rails with MySQL template for Cloud Sandbox
+# Ruby on Rails with MySQL template for Crafting Sandbox
 
-This is a template [Ruby on Rails](https://rubyonrails.org/) skeleton application created on a basic [App](https://crafting.readme.io/docs/app-spec) configuration in [Cloud Sandbox](https://crafting.readme.io/docs/introduction). 
+This is a Ruby on Rails with MySQL template, configured for quick development setup in [Crafting Sandbox](https://crafting.readme.io/docs).
 
-## Getting Started
+## Specifications
 
-The general workflow when developing in Cloud Sandbox involves:
-
-1. [Configuring App](https://github.com/crafting-dev/template-ruby-rails#configuring-app)
-2. [Creating Sandbox](https://github.com/crafting-dev/template-ruby-rails#creating-sandbox)
-3. [Developing with Sandbox](https://github.com/crafting-dev/template-ruby-rails#developing-with-sandbox)
-
-### 1. Configuring App
-
-[App](https://crafting.readme.io/docs/app-spec) can be viewed/edited either on the [Web UI](https://sandboxes.cloud/app) or via the [`cs`](https://sandboxes.cloud/download) command line tool. To see the App configuration used for this template, see [steps to recreate template](https://github.com/crafting-dev/template-ruby-rails#steps-to-recreate-template) below.
-
-### 2. Creating Sandbox
-
-Once App has been configured, you can create a sandbox using either the Web UI, or through the command line tool:
-
-```
-cs sandbox create
+This template was created with MySQL and *without* Minitest:
+```bash
+rails new template-ruby-rails -d mysql -T
 ```
 
-### 3. Developing with Sandbox
+[Rspec](https://rspec.info/) is used for testing instead:
+```ruby
+gem 'rspec-rails', '~> 5.0.0'
+```
 
-After creating a sandbox, you can start developing in the workspace using any of the Web UI or command line tools. The [docs](https://crafting.readme.io/docs/development-in-sandbox) contain more information for working with a sandbox. 
+[Rubocop](https://github.com/rubocop/rubocop) is used for linting, enforcing many of the guidelines outlined in the community [Ruby Style Guide](https://rubystyle.guide/).
+```ruby
+gem 'rubocop-rails', require: false
+```
 
-This template was generated following the steps [below](https://github.com/crafting-dev/template-ruby-rails#steps-to-recreate-template).
+The shell script [`sandbox.sh`](sandbox.sh) is used to configure sandbox for quick workspace setup. The manifest file [`.sandbox/manifest.yaml`](.sandbox/manifest.yaml) uses it during build stage when creating a new sandbox using this template.
 
-## Caveat
+[`config/database.yml`](config/database.yml) is modified to use the preconfigured credentials set in App configuration. The environment variables `MYSQL_SERVICE_HOST` and `MYSQL_SERVICE_PORT` come already populated in sandbox.
 
-For the purposes of this template, the [Repo Manifest](https://crafting.readme.io/docs/repo-manifest) file [.sandbox/manifest.yaml](https://github.com/crafting-dev/template-ruby-rails/blob/master/.sandbox/manifest.yaml) is used to install needed packages and gems during build. 
+## Pings Controller
 
-In your own workspace, however, it is best that you make installation of tools, packages, customize shell, environment variables, etc. by making modification to the workspace and taking [snapshots](https://crafting.readme.io/docs/snapshots). 
+This template comes with a `Pings` controller already generated:
+```bash
+rails g controller Pings pong
+```
 
-You can instead use `Repo Manifests` to change automation with source code (eg. changing how code is built, etc.). 
+whereby the action `pong` is defined as:
+```ruby
+def pong
+  @pong = {
+    ping: @ping,               # @ping = params[:ping]
+    received_at: @current_time # @current_time = Time.current
+  }
 
-See our [FAQ](https://crafting.readme.io/docs/frequently-asked-questions) for more details.
+  render json: @pong
+end
+```
 
-## Steps to recreate template
+with the route:
+```ruby
+get 'ping', to: 'pings#pong'
+```
 
-#### App configuration
+This action receives a parameter string, and responds with the param string and the current time.
+For example:
+```bash
+$ curl --request GET 'localhost:3000/ping?ping=hello'
+{"ping":"hello","received_at":"XXXX-XX-XXXXX:XX:XX.XXXX"}
+```
 
-The following App configuration was used to create this template (`cs app show -o yaml`):
+## App Configuration
+
+The following [App configuration](https://crafting.readme.io/docs/app-spec) was used to create this template:
 
 ```yaml
 endpoints:
@@ -52,16 +66,13 @@ endpoints:
         port: http
         target: ruby-rails
       path_prefix: /
-  name: app
+  name: http
 services:
-- description: Ruby on Rails with MySQL template
+- description: Template ruby/rails
   name: ruby-rails
   workspace:
     checkouts:
-    - manifest:
-        overlays:
-        - content: ""
-      path: src/template-ruby-rails
+    - path: src/template-ruby-rails
       repo:
         git: https://github.com/crafting-dev/template-ruby-rails.git
     packages:
@@ -75,64 +86,18 @@ services:
       protocol: HTTP/TCP
 - managed_service:
     properties:
-      root-password: batman
+      database: superhero
+      password: batman
+      username: brucewayne
     service_type: mysql
     version: "8"
   name: mysql
-```
-
-The git repo under checkouts can be any empty remote git repository. 
-
-#### Sandbox creation
-
-Create a new sandbox with the above App configuration:
-
-```
-cs sandbox create
-```
-
-#### Develop in sandbox
-
-Install necessary packages and gems before creating a new rails app in the workspace.
-
-1. `sudo apt-get install -y libgmp3-dev`
-2. `sudo apt-get install -y mysql-client libmysqlclient-dev`
-3. `sudo apt-get update`
-4. `gem install rails`
-
-Create new rails app:
-
-```
-rails new . -d mysql
-```
-
-Update `config/database.yml`:
-
-```yaml
-default: &default
-  adapter: mysql2
-  encoding: utf8mb4
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: root
-  password: batman # Use an environment variable in a real app setting
-  host: <%= ENV['MYSQL_SERVICE_HOST'] %>
-
-development:
-  <<: *default
-  database: mysql
-  
-production:
-  <<: *default
-  url: <%= ENV['MY_APP_DATABASE_URL'] %>
-```
-
-*NOTE 1*: Sandbox supports standard service injection, where the environment variables `MYSQL_SERVICE_HOST` and `MYSQL_SERVICE_PORT` are already populated. See [environment variables](https://crafting.readme.io/docs/environment-variables) for more details.
-
-*NOTE 2*: For `production.url`, you can specify the connection url environment variable explicitly. Read [Configuring a database](https://guides.rubyonrails.org/configuring.html#configuring-a-database) for a full overview on how database connection configuration can be specified.
-
-
-Then start a new rails server:
-
-```
-rails s
+- managed_service:
+    properties:
+      database: superherotest
+      password: batman
+      username: brucewayne
+    service_type: mysql
+    version: "8"
+  name: mysqltest
 ```
