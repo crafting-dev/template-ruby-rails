@@ -19,10 +19,4 @@ gem install rails
 echo '== Bundle install =='
 bundle install
 
-echo '== Wait for mysql service to be ready =='
-cs wait service mysql
-
-echo '== Run all migrations =='
-rails db:migrate
-
 echo '== Done! =='

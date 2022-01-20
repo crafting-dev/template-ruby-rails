@@ -63,10 +63,12 @@ endpoints:
 - name: api
   http:
     routes:
-    - pathPrefix: "/api/"
+    - pathPrefix: "/"
       backend:
         target: ruby-rails
         port: api
+    authProxy:
+      disabled: true
 workspaces:
 - name: ruby-rails
   description: Template backend using Ruby/Rails
