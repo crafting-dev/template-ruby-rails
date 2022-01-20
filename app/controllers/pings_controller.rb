@@ -6,7 +6,7 @@ class PingsController < ApplicationController
   # GET /ping
   def pong
     @pong = {
-      ping: @ping,
+      ping: @ping.presence || 'To ping, or not to ping; that is the question.',
       received_at: @current_time
     }
 

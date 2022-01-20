@@ -34,8 +34,8 @@ whereby the action `pong` is defined as:
 ```ruby
 def pong
   @pong = {
-    ping: @ping,               # @ping = params[:ping]
-    received_at: @current_time # @current_time = Time.current
+    ping: @ping.presence || "To ping, or not to ping...",
+    received_at: @current_time
   }
 
   render json: @pong
