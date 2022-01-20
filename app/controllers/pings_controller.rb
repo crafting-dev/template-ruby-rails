@@ -3,6 +3,7 @@
 class PingsController < ApplicationController
   before_action :set_ping, :set_current_time, only: :pong
 
+  # GET /ping
   def pong
     @pong = {
       ping: @ping,

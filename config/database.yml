@@ -14,8 +14,10 @@ default: &default
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: brucewayne
-  password: batman ## WARNING! Use environment variables in a real project!
-
+  ## WARNING!
+  ## Password hardcoded for template app use only!
+  ## Set and use environment variables instead.
+  password: batman
 
 development:
   <<: *default
