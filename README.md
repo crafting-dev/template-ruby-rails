@@ -1,6 +1,6 @@
 # Ruby on Rails with MySQL template for Crafting Sandbox
 
-This is a Ruby on Rails with MySQL template, configured for quick development setup in [Crafting Sandbox](https://crafting.readme.io/docs).
+This is a Ruby on Rails with MySQL template, configured for quick development setup in [Crafting Sandbox](https://docs.sandboxes.cloud/docs).
 
 ## Specifications
 
@@ -34,8 +34,8 @@ whereby the action `pong` is defined as:
 ```ruby
 def pong
   @pong = {
-    ping: @ping,               # @ping = params[:ping]
-    received_at: @current_time # @current_time = Time.current
+    ping: @ping.presence || "To ping, or not to ping...",
+    received_at: @current_time
   }
 
   render json: @pong
@@ -54,50 +54,43 @@ $ curl --request GET 'localhost:3000/ping?ping=hello'
 {"ping":"hello","received_at":"XXXX-XX-XXXXX:XX:XX.XXXX"}
 ```
 
-## App Configuration
+## App Definition
 
-The following [App configuration](https://crafting.readme.io/docs/app-spec) was used to create this template:
+The following [App Definition](https://docs.sandboxes.cloud/docs/app-definition) was used to create this template:
 
 ```yaml
 endpoints:
-- http:
+- name: api
+  http:
     routes:
-    - backend:
-        port: http
+    - pathPrefix: "/"
+      backend:
         target: ruby-rails
-      path_prefix: /
-  name: http
-services:
-- description: Template ruby/rails
-  name: ruby-rails
-  workspace:
-    checkouts:
-    - path: src/template-ruby-rails
-      repo:
-        git: https://github.com/crafting-dev/template-ruby-rails.git
-    packages:
-    - name: ruby
-      version: ~2.7
-    - name: nodejs
-      version: ~16
-    ports:
-    - name: http
-      port: 3000
-      protocol: HTTP/TCP
-- managed_service:
-    properties:
-      database: superhero
-      password: batman
-      username: brucewayne
-    service_type: mysql
-    version: "8"
-  name: mysql
-- managed_service:
-    properties:
-      database: superherotest
-      password: batman
-      username: brucewayne
-    service_type: mysql
-    version: "8"
-  name: mysqltest
+        port: api
+    authProxy:
+      disabled: true
+workspaces:
+- name: ruby-rails
+  description: Template backend using Ruby/Rails
+  ports:
+  - name: api
+    port: 3000
+    protocol: HTTP/TCP
+  checkouts:
+  - path: backend
+    repo:
+      git: https://github.com/crafting-dev/template-ruby-rails
+  packages:
+  - name: ruby
+    version: 2.7.2
+  - name: nodejs
+    version: 16.12.0
+dependencies:
+- name: mysql
+  serviceType: mysql
+  version: '8'
+  properties:
+    database: superhero
+    password: batman
+    username: brucewayne
 ```
