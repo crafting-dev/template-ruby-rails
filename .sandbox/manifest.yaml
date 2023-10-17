@@ -5,4 +5,4 @@ hooks:
 daemons:
   app:
     run:
-      cmd: rails s -b 0.0.0.0 -p 3000
+      cmd: PATH=$HOME/.rbenv/shims:"$PATH" rails s -b 0.0.0.0 -p 3000
