@@ -6,3 +6,5 @@ daemons:
   app:
     run:
       cmd: rails s -b 0.0.0.0 -p 3000
+      env:
+      - PATH=$HOME/.rbenv/shims:$PATH
