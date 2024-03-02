@@ -24,5 +24,6 @@ gem install rails
 
 echo '== Bundle install =='
 bundle install
+rbenv rehash
 
 echo '== Done! =='
